@@ -1,4 +1,4 @@
-# Lyrikline New Poems downloader
+# Lyrikline New Poems Downloader
 
 Written by: Vitaly Lyapunov <br/> 
 E-Mail: vitaly.lyapunov@gmail.com
