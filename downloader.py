@@ -56,22 +56,35 @@ class LyriklineDownloader(object):
     def download(self, urls):
         today = datetime.datetime.today()
         path = today.strftime("%d %B %Y")
+
+        # Create the directory if it doesn't exist
         if not os.path.exists(path):
             os.makedirs(path)
 
+        # Change to the new directory
         os.chdir(path)
 
+        # Iterate over the URLs to download
         for entry in urls:
             href, author, title = entry
+            
+            # Sanitize the title to avoid filesystem errors
             title = title.replace("/", "-")
-            poem =requests.get('https://www.lyrikline.org' + href, headers=headers)
+            
+            # Make a request to the URL and parse the content
+            poem = requests.get('https://www.lyrikline.org' + href, headers=headers)
             soap_poem = BeautifulSoup(poem.content, "lxml")
-            text = soap_poem.find('section', class_="gedicht").find('div', class_="gedicht-originaltext")
-            gedicht = f"{text}"
+            
+            # Extract text from the desired HTML element
+            text = soap_poem.find('section', class_="gedicht").find('div', class_="gedicht-originaltext").get_text(separator="\n", strip=True)
+            
+            # Create the author's directory if it doesn't exist
             if not os.path.exists(f"{author}"):
                 os.makedirs(f"{author}")
-            with open(f"{author}/{title}.html", "w") as f:
-                f.write(gedicht)
+            
+            # Write the extracted text to a file
+            with open(f"{author}/{title}.txt", "w", encoding="utf-8") as f:
+                f.write(text)
 
 downloader = LyriklineDownloader()
 downloader.download_new_poems()
